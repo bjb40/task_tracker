@@ -17,6 +17,8 @@ from datetime import date, timedelta as td
 
 # start and end dates
 
+datref = 'J:/Bryce/python/time_tracker/data/daily_tasks.csv'
+
 current = date.today()
 today = current.strftime('%m-%d') 
 
@@ -26,6 +28,7 @@ end_date = date(2014, 6, 30)
 #pull time
 
 import time as now
+
 hour = now.strftime("%H:%M")
 
 #ask for task number
@@ -36,7 +39,7 @@ taskn = raw_input("Task number: ")
 
 task = raw_input("What is the task: ")
 
-tag = raw_input("What kind (w,s,t): ")
+tag = raw_input("Project name: ")
 
 #set end timer
 
@@ -78,20 +81,29 @@ class Timer(object):
 go = Timer()
 go.start()
 
-unnecessary = raw_input("Task timer begun; hit any key to end")
+complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
 go.stop()
 
 #return minutes from timer
 min_spent = go.elapsed().seconds//60
 
-newline = today, hour, taskn, task, tag, min_spent
+newline = today, hour, int(taskn), task, tag, min_spent, int(complete)
 
 #apend new row:
-fd = open('J:/Bryce/python/time_tracker/data/daily_tasks.csv','a')
-fd.write('\n' +str(newline)[1:-1])
+fd = open(datref,'a')
+fd.write('\n'+str(newline)[1:-1])
 fd.close()
 
-print("The following appended to data:", str(newline)[1:-1])
+success = "failed"
+
+if int(complete) == 1:
+    success = "succeeded"
+
+
+print "Appending to data . . . \n\n\nMinutes Spent:", min_spent
+
+print "Task " + success + "\n\n\n\n"
+
 
 
 """ 
