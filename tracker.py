@@ -1,8 +1,6 @@
 """
 
- This is a multi-span comment with front matter
-
-NOTE - I can prune a lot of these time variables up front because of the timer
+This is a simple task-tracker that saves data into a pre-specified csv location.
 
 """
 
@@ -22,18 +20,15 @@ datref = 'J:/Bryce/python/time_tracker/data/daily_tasks.csv'
 current = date.today()
 today = current.strftime('%m-%d') 
 
-start_date = date(2014, 6, 1)
-end_date = date(2014, 6, 30)
-
 #pull time
 
 import time as now
 
 hour = now.strftime("%H:%M")
 
-#ask for task number
+#ask for work location
 
-taskn = raw_input("Task number: ")
+loc = raw_input("Location(string): ")
 
 #ask for task text
 
@@ -85,9 +80,9 @@ complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (
 go.stop()
 
 #return minutes from timer
-min_spent = go.elapsed().seconds//60
+min_spent = go.elapsed().seconds//60.
 
-newline = today, hour, int(taskn), task, tag, min_spent, int(complete)
+newline = today, hour, loc, task, tag, min_spent, int(complete)
 
 #apend new row:
 fd = open(datref,'a')
@@ -106,15 +101,4 @@ print "Task " + success + "\n\n\n\n"
 
 
 
-""" 
----->
-Code below lists dates - use for report at later date
-<----
 
-
-delta = end_date - start_date
-
-for i in range(delta.days + 1):
-    print start_date + td(days=i)
-
-"""
