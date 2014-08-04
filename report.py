@@ -51,7 +51,7 @@ daysdat = pandas.read_csv(plandir + 'plan-7-2014.csv')
 workdays = 0
 
 #count weekdays for workdays
-for i in daysdat[' weekday']:
+for i in daysdat['weekday']:
     if i < 5.: 
          workdays +=1 
 
@@ -63,11 +63,20 @@ for i in daysdat['holiday']:
 #>> Prepare simple .md output for outputing to pandoc #
 
 worked = 0.
+project_mins = {}
 
 for i in range(0,len(pdat)):
+ #   print pdat['date'][i]
     if str(pdat['date'][i])[1:3] == '07':
-  #      print pdat[' min_spent'] 
-        worked += float(pdat[' min_spent'][i])
+        worked += float(pdat['min_spent'][i])
+
+        if pdat['project'][i] in project_mins:
+            project_mins[pdat['project'][i]] += float(pdat['min_spent'][i])
+            #print('old' + str(pdat['project'][i]))
+        
+        else:
+            project_mins[pdat['project'][i]] = float(pdat['min_spent'][i])
+
 
 
 #>> call pandoc and build a .pdf or .html or .docx document for printing#
@@ -77,19 +86,37 @@ reported = plandir + '07-report.md'
 makerep = open(reported, 'w')
 
 #yaml header
-makerep.write('---\nAuthor:Bryce Bartlett\nDate:\nTitle:July Report\n---\n\n')
+makerep.write('---\nAuthor: Bryce Bartlett\nDate: 8/4/2014 \nTitle: July Report\n---\n\n')
 
 #output for monthly overview
+makerep.write('##Overview#\n\n')
 makerep.write('Planned for ' + str(workdays) + ' days of work in July.\n\n')
 makerep.write('Worked a total of ' + str(round(worked/60.,3)) + ' hours, ')
 makerep.write('which amounts to an average of ' + str(round(worked/(float(workdays)*60.),2)) + ' hours per work day.\n\n\n')
 
-
 #output for overview of projects
 
+makerep.write('##Projects#\n\n')
 
-
-makerep.write('And something about the projects')
-
+for i in project_mins:
+    makerep.write('\n\n###' + str(i) + ': ' + str(round(project_mins[i]/60.,2)) + ' hours#\n\n')
+    makerep.write('|Date      | Task                                                    | Hours |\n')
+    makerep.write('|----------|---------------------------------------------------------|-------|\n')
+    
+    for j in range(0,len(pdat)):
+        if pdat['project'][j] == i and str(pdat['date'][j])[1:3] == '07':
+            makerep.write('| ' + str(pdat['date'][j]) + ' | ' + str(pdat['task'][j]) + ' | ' + str(round(pdat['min_spent'][j]/60.,2)) + '|\n')
 
 makerep.close()
+
+# call pandoc to make it a docx
+
+import subprocess
+
+fileout = os.path.splitext(reported)[0] + '.docx'
+
+args =  ['pandoc', '-s', reported, '-o', fileout]
+
+print(args)
+
+subprocess.Popen(args)

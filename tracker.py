@@ -82,6 +82,8 @@ go.stop()
 #return minutes from timer
 min_spent = go.elapsed().seconds//60.
 
+#need to modify this
+
 newline = today, hour, loc, task, tag, min_spent, int(complete)
 
 #apend new row:
