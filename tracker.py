@@ -15,7 +15,7 @@ from datetime import date, timedelta as td
 
 # start and end dates
 
-datref = 'J:/Bryce/python/time_tracker/data/daily_tasks.csv'
+datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
 
 current = date.today()
 today = current.strftime('%m-%d') 
