@@ -10,8 +10,8 @@ from datetime import date, timedelta as td
 
 # import data
 
-datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
-plandir = 'C:/Users/bjb40/Dropbox/tracker_data/'
+datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
+plandir = 'C:/Users/Bryce/Dropbox/tracker_data/'
 
 # prepare a funciton to populate a .csv for monthly planning purposes 
 def makeplan(month):

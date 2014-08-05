@@ -15,7 +15,7 @@ from datetime import date, timedelta as td
 
 # start and end dates
 
-datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
+datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
 
 current = date.today()
 today = current.strftime('%m-%d') 
@@ -26,6 +26,7 @@ import time as now
 
 hour = now.strftime("%H:%M")
 
+
 #ask for work location
 
 loc = raw_input("Location(string): ")
@@ -35,6 +36,7 @@ loc = raw_input("Location(string): ")
 task = raw_input("What is the task: ")
 
 tag = raw_input("Project name: ")
+
 
 #set end timer
 
@@ -76,8 +78,26 @@ class Timer(object):
 go = Timer()
 go.start()
 
+# print out daily time
+
+hours_day = 0.
+
+import pandas
+
+pdat = pandas.read_csv(datref)
+
+for i in range(0,len(pdat)):
+#   print ('pdat:' + str(pdat['date'][i])[1:6] + ' == ' + str(today))  
+   if str(pdat['date'][i])[1:6] == str(today):
+        hours_day += float(pdat['min_spent'][i])
+
+print ("\n\nHours today so far: " + str(round(hours_day/60.,2)) + "\n\n")
+
+# return to timer task
+
 complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
 go.stop()
+
 
 #return minutes from timer
 min_spent = go.elapsed().seconds//60.
@@ -103,4 +123,7 @@ print "Task " + success + "\n\n\n\n"
 
 
 
+hours_day += float(min_spent)
+
+print ("Hours today now " + str(round(hours_day/60.,2)) + ".")
 
