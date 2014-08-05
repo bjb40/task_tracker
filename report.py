@@ -86,26 +86,26 @@ reported = plandir + '07-report.md'
 makerep = open(reported, 'w')
 
 #yaml header
-makerep.write('---\nAuthor: Bryce Bartlett\nDate: 8/4/2014 \nTitle: July Report\n---\n\n')
+makerep.write('---\nauthor: Bryce Bartlett\ndate: August 2014 \ntitle: July Report\n---\n\n')
 
 #output for monthly overview
-makerep.write('##Overview#\n\n')
+makerep.write('#Overview\n\n')
 makerep.write('Planned for ' + str(workdays) + ' days of work in July.\n\n')
 makerep.write('Worked a total of ' + str(round(worked/60.,3)) + ' hours, ')
 makerep.write('which amounts to an average of ' + str(round(worked/(float(workdays)*60.),2)) + ' hours per work day.\n\n\n')
 
 #output for overview of projects
 
-makerep.write('##Projects#\n\n')
+makerep.write('#Projects\n\n')
 
 for i in project_mins:
-    makerep.write('\n\n###' + str(i) + ': ' + str(round(project_mins[i]/60.,2)) + ' hours#\n\n')
-    makerep.write('|Date      | Task                                                    | Hours |\n')
-    makerep.write('|----------|---------------------------------------------------------|-------|\n')
+    makerep.write('\n\n##' + str(i) + ': ' + str(round(project_mins[i]/60.,2)) + ' hours\n\n\n\n')
+    makerep.write('|Date | Task | Hours |\n')
+    makerep.write('|----------|-------------------------------------|-------|\n')
     
     for j in range(0,len(pdat)):
         if pdat['project'][j] == i and str(pdat['date'][j])[1:3] == '07':
-            makerep.write('| ' + str(pdat['date'][j]) + ' | ' + str(pdat['task'][j]) + ' | ' + str(round(pdat['min_spent'][j]/60.,2)) + '|\n')
+            makerep.write('| ' + str(pdat['date'][j][4:6]) + ' | ' + str(pdat['task'][j]) + ' | ' + str(round(pdat['min_spent'][j]/60.,2)) + '|\n')
 
 makerep.close()
 
@@ -113,10 +113,11 @@ makerep.close()
 
 import subprocess
 
-fileout = os.path.splitext(reported)[0] + '.docx'
+fileout = os.path.splitext(reported)[0] + '.html'
 
-args =  ['pandoc', '-s', reported, '-o', fileout]
+args =  ['pandoc', reported, '-o', fileout, '-s', '-S']
 
 print(args)
 
-subprocess.Popen(args)
+subprocess.Popen(args, stdout=subprocess.PIPE)
+print subprocess.call(args)
