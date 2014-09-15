@@ -6,42 +6,13 @@ This is a simple task-tracker that saves data into a pre-specified csv location.
 
 
 # import dependencies
-
-#import time
-#from datetime import date
-
-
 from datetime import date, timedelta as td
-
-# start and end dates
-
-datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
-
-current = date.today()
-today = current.strftime('%m-%d') 
-
-#pull time
-
-import time as now
-
-hour = now.strftime("%H:%M")
-
-
-#ask for work location
-
-loc = raw_input("Location(string): ")
-
-#ask for task text
-
-task = raw_input("What is the task: ")
-
-tag = raw_input("Project name: ")
-
-
-#set end timer
-
 import datetime
+import time as now
+import pandas
+import csv
 
+#Define Timer Object
 class Timer(object):
     """A simple timer class"""
     
@@ -75,26 +46,49 @@ class Timer(object):
         """Stops a split. Returns the time elapsed since split was called"""
         return message + str(datetime.datetime.now() - self.split_start)
 
+
+#initialize variables
+datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
+current = date.today()
+today = current.strftime('%m-%d') 
+hour = now.strftime("%H:%M")
+
+#request input variables
+loc = raw_input("Location(string): ")
+task = raw_input("What is the task: ")
+tag = raw_input("Project name: ")
+
+#start timer
 go = Timer()
 go.start()
 
-# print out daily time
-
+#Load Timer Messages
 hours_day = 0.
+hours_month = 0.
+hours_week = 0.
 
-import pandas
+daysdat = pandas.read_csv('C:/Users/Bryce/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
+days_month = 0
+days_week = 0
+for i in range(len(daysdat)):
+    if daysdat["holiday"][i] == 0 and daysdat["weekday"][i] < 5:
+        if datetime.datetime.strptime(daysdat["day"][i],"%m-%d").date().day < current.day:
+            days_month += 1.
+
 
 pdat = pandas.read_csv(datref)
 
 for i in range(0,len(pdat)):
-#   print ('pdat:' + str(pdat['date'][i])[1:6] + ' == ' + str(today))  
-   if str(pdat['date'][i])[1:6] == str(today):
-        hours_day += float(pdat['min_spent'][i])
+    if str(pdat['date'][i])[0:2] == str(today)[0:2]:
+           hours_month += float(pdat['min_spent'][i])
+           if str(pdat['date'][i]) == str(today):
+               hours_day += float(pdat['min_spent'][i])
 
-print ("\n\nHours today so far: " + str(round(hours_day/60.,2)) + "\n\n")
 
-# return to timer task
+print ("\n\nAverage hours per workday (" + str(days_month) + ") this month:     " + str(round(hours_month/(60.*days_month),2)) )
+print ("Hours today so far:                             " + str(round(hours_day/60.,2)) + "\n\n")
 
+#Request timer completion
 complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
 go.stop()
 
@@ -102,28 +96,20 @@ go.stop()
 #return minutes from timer
 min_spent = go.elapsed().seconds//60.
 
-#need to modify this
-
-newline = today, hour, loc, task, tag, min_spent, int(complete)
+#Add data to time tracker
+newline = today,hour,loc,task,tag,min_spent,int(complete)
 
 #apend new row:
-fd = open(datref,'a')
-fd.write('\n'+str(newline)[1:-1])
-fd.close()
+with open(datref, 'a') as csvfile:
+    csv.writer(csvfile, lineterminator="\n").writerow(newline)
 
 success = "failed"
 
 if int(complete) == 1:
     success = "succeeded"
 
-
 print "Appending to data . . . \n\n\nMinutes Spent:", min_spent
-
 print "Task " + success + "\n\n\n\n"
-
-
-
 hours_day += float(min_spent)
-
 print ("Hours today now " + str(round(hours_day/60.,2)) + ".")
 
