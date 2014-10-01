@@ -48,7 +48,7 @@ class Timer(object):
 
 
 #initialize variables
-datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
+datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
 current = date.today()
 today = current.strftime('%m-%d')
 hour = now.strftime("%H:%M")
@@ -67,7 +67,7 @@ hours_day = 0.
 hours_month = 0.
 hours_week = 0.
 
-daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
+daysdat = pandas.read_csv('C:/Users/Bryce/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
 days_month = 0
 days_week = 0
 for i in range(len(daysdat)):
@@ -86,7 +86,11 @@ for i in range(0,len(pdat)):
                hours_month -= float(pdat['min_spent'][i])
 
 
-print ("\n\nAverage hours per workday (" + str(days_month) + ") this month:     " + str(round(hours_month/(60.*float(days_month)),2)) )
+if float(days_month) > 0:
+    print ("\n\nAverage hours per workday (" + str(days_month) + ") this month:     " + str(round(hours_month/(60.*float(days_month)),2)) )
+else:
+    print ("\n\nFirst day of the month - good luck!")
+
 print ("Hours today so far:                              " + str(round(hours_day/60.,2)) + "\n\n")
 
 #Request timer completion

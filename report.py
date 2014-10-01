@@ -44,7 +44,7 @@ import pandas
 
 #>> Read in the data #
 
-repmonth = '08'
+repmonth = '09'
 pdat = pandas.read_csv(datref)
 daysdat = pandas.read_csv(plandir + 'plan-' + repmonth + '-2014.csv')
 
@@ -112,7 +112,7 @@ makerep.close()
 
 # call pandoc to make it a docx
 
-import subprocess
+import os,subprocess
 
 fileout = os.path.splitext(reported)[0] + '.docx'
 
