@@ -1,15 +1,21 @@
 """
 
 This collects a number of reporting tasks and reviews database.
-Requires a pre-defined databese with a number of tables.
+Requires a pre-defined databese with a number of tables. Note that all date objects are 
+transformed into a string the Year,month,day e.g. '2014,10,25' is October 25, 2014
+
 Projects Table
-    number: interger (also unique key)
+    number{k}: interger (also unique key)
     name: text
     description: text
     notes: text
     collaborators: text (names separated by semicolons)
     production: binary (true means that it is leading to publicaiton)
     phase: interger (1 to 4) 1=investigation; 2=analysis; 3=production; 4=post-production
+
+Transitions Table
+    number{k}: integer <-> Projects
+    name: text <-> Projects
     start_date: date (date investigation begun)
     analysis_date: date (date analysis begun)
     production_date: date(date writing--for publication--begun)
@@ -42,8 +48,8 @@ import sqlite3 as dbapi
 datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
 plandir = 'C:/Users/Bryce/Dropbox/tracker_data/'
 
-db = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
-cur = db.cursor()
+con = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
+cur = con.cursor()
 
 # prepare a funciton to populate a .csv for monthly planning purposes 
 def makeplan(month):
@@ -150,17 +156,28 @@ def makereport(month):
     print subprocess.call(args)
 
 def newproject():
-    '''
+    ''' 
     Input new project into exesiting sqlite3 database.
+    All dates are strings of the form '%Y,%m,%d', or 2014,10,24 for October 24, 2014.
     '''
-#cur.execute('CREATE TABLE projects(number INTERGER, description TEXT, notes TEXT, collab TEXT, production BINARY, phase INTERGER, start_date REAL, analysis_date REAL, production_date REAL, postproduction_date REAL, published_date REAL, abandoned_date REAL, citation REAL)') 
+#cur.execute('CREATE TABLE projects(number INTERGER, project_name TEXT, description TEXT, notes TEXT, collab TEXT, production BINARY, phase INTERGER, start_date TEXT, analysis_date TEXT, production_date TEXT, postproduction_date TEXT, published_date TEXT, abandoned_date TEXT, citation TEXT)') 
 
     import datetime
-    start_date = datetime.datetime.now()
-    print start_date
- 
-#    rawinput
+    start_date = datetime.datetime.now().strftime('%Y,%m,%d')
+#    print start_date.strftime('%Y,%m,%d')
+    name = raw_input("Name: ")
+    description = raw_input("Description: ")
+    collab = raw_input("Collaborators: ")
+    production = raw_input("Production project (binary, True or False): ")
+    notes = raw_input("Any notes: ")
 
+    print (1,name,description,notes,production,1,start_date,'','','','','','','')
+
+    cur.execute('INSERT INTO projects VALUES(?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL)', (1,name,description,notes,production,1,start_date))
+
+#    cur.execute('INSERT INTO projects VALUES
+
+    con.commit()
     
 
 
