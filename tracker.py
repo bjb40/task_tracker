@@ -11,6 +11,8 @@ import datetime
 import time as now
 import pandas
 import csv
+import sqlite3 as dbapi
+
 
 #Define Timer Object
 class Timer(object):
@@ -53,6 +55,16 @@ current = date.today()
 today = current.strftime('%m-%d')
 hour = now.strftime("%H:%M")
 
+con = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
+cur = con.cursor()
+# moving from unicode to text : 
+con.text_factory = str
+
+plist = {}
+cur.execute('SELECT project_name,production FROM projects')
+for name, prod in cur.fetchall():
+    plist[name] = prod 
+
 #request input variables
 loc = raw_input("Location(string): ")
 task = raw_input("What is the task: ")
@@ -65,6 +77,7 @@ go.start()
 #Load Timer Messages
 hours_day = 0.
 hours_month = 0.
+phours_month = 0.
 hours_week = 0.
 
 daysdat = pandas.read_csv('C:/Users/Bryce/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
@@ -81,17 +94,29 @@ pdat = pandas.read_csv(datref)
 for i in range(0,len(pdat)):
     if str(pdat['date'][i])[0:2] == str(today)[0:2]:
            hours_month += float(pdat['min_spent'][i])
+           if pdat['project'][i] in plist:
+               if str(pdat['date'][i]) != str(today):
+                   if plist[pdat['project'][i]] == 'True':
+                       phours_month += float(pdat['min_spent'][i])
+           else:
+               print('\n\n\tDATABASE ERROR: %s is not in database -- check for correctness.\n\n' % pdat['project'][i])
+
            if str(pdat['date'][i]) == str(today):
                hours_day += float(pdat['min_spent'][i])
                hours_month -= float(pdat['min_spent'][i])
 
+avhours_month = hours_month/(60.*float(days_month))
+avphours_month = phours_month/(60.*float(days_month))
+
+print ('\nHours today so far:                             %.2f' % float(hours_day/60.))
 
 if float(days_month) > 0:
-    print ("\n\nAverage hours per workday (" + str(days_month) + ") this month:     " + str(round(hours_month/(60.*float(days_month)),2)) )
+    print ("Average hours per workday (" + str(days_month) + ") this month:     %.2f" % avhours_month )
+    print ('\n\nCurrent conversion rate:                        %.2f' % float(avhours_month/8.) )
+    print ('Current production ratio:                       %.2f' % float(avphours_month/avhours_month) )
 else:
     print ("\n\nFirst day of the month - good luck!")
 
-print ("Hours today so far:                              " + str(round(hours_day/60.,2)) + "\n\n")
 
 #Request timer completion
 complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
