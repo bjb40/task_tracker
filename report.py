@@ -11,7 +11,7 @@ Projects Table
     notes: text
     collaborators: text (names separated by semicolons)
     production: binary (true means that it is leading to publicaiton)
-    phase: interger (1 to 4) 1=investigation; 2=analysis; 3=production; 4=post-production
+    phase: interger (1 to 4) 1=investigation; 2=analysis; 3=production; 4=post-production; 0=abandoned or 
 
 Transitions Table
     number{k}: integer <-> Projects
@@ -34,9 +34,10 @@ Notes Table
 """
 
 print ('Functions:\n\n' +
-'Plan a month:            makeplan(month)\n' +
-'Create a monthly report: makereport(month)\n' + 
-'Start a new project:     newproject\n')
+'Plan a month:               makeplan(month)\n' +
+'Create a monthly report:    makereport(month)\n' + 
+'Start a new project:        newproject()\n' +
+'Print Summary of Project:   projectsum()\n')
 
 # import dependencies
 
@@ -50,6 +51,8 @@ plandir = 'C:/Users/Bryce/Dropbox/tracker_data/'
 
 con = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
 cur = con.cursor()
+# moving from unicode to text : 
+con.text_factory = str
 
 # prepare a funciton to populate a .csv for monthly planning purposes 
 def makeplan(month):
@@ -106,7 +109,7 @@ def makereport(month):
     project_mins = {}
 
     for i in range(0,len(pdat)):
-    #   print pdat['date'][i]
+        #print pdat['date'][i]
         if str(pdat['date'][i])[0:2] == repmonth:
             worked += float(pdat['min_spent'][i])
 
@@ -127,33 +130,35 @@ def makereport(month):
     makerep.write('---\nauthor: Bryce Bartlett\ndate: September 2014 \ntitle: August Report\n---\n\n')
 
     #output for monthly overview
-    makerep.write('#Overview\n\n')
+    makerep.write('#Overview#\n\n')
     makerep.write('Planned for ' + str(workdays) + ' days of work in August.\n\n')
     makerep.write('Worked a total of ' + str(round(worked/60.,3)) + ' hours, ')
     makerep.write('which amounts to an average of ' + str(round(worked/(float(workdays)*60.),2)) + ' hours per work day.\n\n\n')
 
     #output for overview of projects
-    makerep.write('#Projects\n\n')
+    makerep.write('#Projects#\n\n')
 
     for i in project_mins:
-        makerep.write('\n\n##' + str(i) + ': ' + str(round(project_mins[i]/60.,2)) + ' hours\n\n\n\n')
+        #print i
+        makerep.write('\n\n##' + str(i) + ': ' + str(round(project_mins[i]/60.,2)) + ' hours#\n\n\n\n')
         makerep.write('|Date | Task | Hours |\n')
         makerep.write('|----------|-------------------------------------|-------|\n')
     
-    for j in range(0,len(pdat)):
-        if pdat['project'][j] == i and str(pdat['date'][j])[0:2] == repmonth:
-            makerep.write('| ' + str(pdat['date'][j][3:5]) + ' | ' + str(pdat['task'][j]) + ' | ' + str(round(pdat['min_spent'][j]/60.,2)) + '|\n')
+        for j in range(0,len(pdat)):
+            if pdat['project'][j] == i and str(pdat['date'][j])[0:2] == repmonth:
+                #print(pdat['project'][j],i)
+                makerep.write('| ' + str(pdat['date'][j][3:5]) + ' | ' + str(pdat['task'][j]) + ' | ' + str(round(pdat['min_spent'][j]/60.,2)) + '|\n')
 
     makerep.close()
 
-    # call pandoc to make it a docx
-    import os,subprocess
+    # call pandoc to make it a docx -- doesn't format correctly
+#    import os,subprocess
 
-    fileout = os.path.splitext(reported)[0] + '.docx'
-    args =  ['pandoc', reported, '-o', fileout, '-s']
-    print(args)
-    subprocess.Popen(args, stdout=subprocess.PIPE)
-    print subprocess.call(args)
+#    fileout = os.path.splitext(reported)[0] + '.docx'
+#    args =  ['pandoc', '-s','-S', reported, '-o', fileout,]
+#    print(args)
+#    subprocess.Popen(args, stdout=subprocess.PIPE)
+#    print subprocess.call(args)
 
 def newproject():
     ''' 
@@ -171,14 +176,50 @@ def newproject():
     production = raw_input("Production project (binary, True or False): ")
     notes = raw_input("Any notes: ")
 
+    #assign index number as 1 plus prior largest
+    cur.execute('SELECT MAX(number) FROM projects')
+    newnum = cur.fetchall()[0][0] + 1
+
+    print 'Creating record with the following values:'
     print (1,name,description,notes,production,1,start_date,'','','','','','','')
 
-    cur.execute('INSERT INTO projects VALUES(?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL)', (1,name,description,notes,production,1,start_date))
-
-#    cur.execute('INSERT INTO projects VALUES
+    cur.execute('INSERT INTO projects VALUES(?,?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL)', (newnum,name,description,notes,collab,production,1,start_date))
 
     con.commit()
     
 
+# looking up name and structure cur.execute('pragma table_info(<tablename>)')
+# looking up in table cur.execute(SELECT <column1>, <column2> FROM <table>') * gets all
+# moving from unicode to text : con.text_factory = str
 
- 
+def projectsum():
+    '''
+    Prints list of projects and summarizes times and dates.
+    '''
+    
+    cur.execute('SELECT project_name FROM projects')
+    p_list = cur.fetchall()
+    for i in p_list:
+        print i[0]
+    
+    p = raw_input("Identify wich project (listed above) you want summarized: ")
+    import scipy as sp
+    import csv
+    import pandas
+    # Read the data
+    pdat = pandas.read_csv(datref)
+    worked = 0. # counter for minutes
+
+    #Iterate through entire list
+    for i in range(0,len(pdat)):
+        if pdat['project'][i] == p:
+            worked += float(pdat['min_spent'][i])
+
+    hours = round(worked/60.,3)
+    print 'Worked on ' + p + ' %.3f hours.' % hours 
+
+    #For analyzing transition time -- later
+#    import datetime
+#    today = datetime.datetime.now()
+
+
