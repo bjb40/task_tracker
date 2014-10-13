@@ -41,8 +41,15 @@ print ('Functions:\n\n' +
 
 # import dependencies
 
+import datetime
 from datetime import date, timedelta as td
 import sqlite3 as dbapi
+import calendar
+
+#universal stats
+
+#This is the pin for planned working hours per work day.
+planperday = 8.
 
 # import data
 
@@ -89,6 +96,7 @@ def makereport(month):
     import pandas
     #>> Read in the data #
     repmonth = str(month)
+    repdate = datetime.datetime.now()
     pdat = pandas.read_csv(datref)
     daysdat = pandas.read_csv(plandir + 'plan-' + repmonth + '-2014.csv')
 
@@ -106,12 +114,23 @@ def makereport(month):
 
     #>> Prepare simple .md output for outputing to pandoc #
     worked = 0.
+    pworked = 0.
     project_mins = {}
+    #identify "production projects" from database
+    plist = {}
+    cur.execute('SELECT project_name,production FROM projects')
+    for name, prod in cur.fetchall():
+        plist[name] = prod 
 
     for i in range(0,len(pdat)):
         #print pdat['date'][i]
         if str(pdat['date'][i])[0:2] == repmonth:
             worked += float(pdat['min_spent'][i])
+            if pdat['project'][i] in plist:
+                if plist[pdat['project'][i]] == 'True':
+                    pworked += float(pdat['min_spent'][i])
+            else:
+                print(pdat['project'][i] + ' recorded on ' + pdat['date'] + ' is not in database -- check for correctness.')
 
             if pdat['project'][i] in project_mins:
                 project_mins[pdat['project'][i]] += float(pdat['min_spent'][i])
@@ -120,20 +139,33 @@ def makereport(month):
             else:
                 project_mins[pdat['project'][i]] = float(pdat['min_spent'][i])
 
-
+    #output stats
+    hours = worked/60.
+    prodhours = pworked/60.
+    avperday = worked/(float(workdays)*60.)
+    avproday = pworked/(float(workdays)*60.)
+    convrate = avperday/planperday
+    prodratio = avproday/avperday
 
     #>> call pandoc and build a .pdf or .html or .docx document for printing#
     reported = plandir + repmonth + '-report.md'
     makerep = open(reported, 'w')
 
     #yaml header
-    makerep.write('---\nauthor: Bryce Bartlett\ndate: September 2014 \ntitle: August Report\n---\n\n')
+    makerep.write('---\nauthor: Bryce Bartlett\ndate: {0:%B} {0:%d}, {0:%Y} \ntitle: {1} Report\n---\n\n'.format(repdate,calendar.month_name[int(month)]))
 
     #output for monthly overview
     makerep.write('#Overview#\n\n')
     makerep.write('Planned for ' + str(workdays) + ' days of work in August.\n\n')
-    makerep.write('Worked a total of ' + str(round(worked/60.,3)) + ' hours, ')
-    makerep.write('which amounts to an average of ' + str(round(worked/(float(workdays)*60.),2)) + ' hours per work day.\n\n\n')
+    makerep.write('Worked a total of %.2f hours, ' % hours)
+    makerep.write('which amounts to an average of %.2f hours per work day.\n\n' % avperday)
+    makerep.write('Of this, %.2f hours, or %.2f per day, was work directly related to publication.\n\n\n' % (prodhours, avproday))
+    makerep.write('#Production Statistics:#\n\n')
+
+    #key monthly statistics
+    makerep.write('**Conversion Rate:       %.3f** \n\n' % convrate )
+    makerep.write('**Production Ratio:      %.3f** \n\n' % prodratio )
+    makerep.write('**Transition Time:       tbd** \n\n\n')
 
     #output for overview of projects
     makerep.write('#Projects#\n\n')
@@ -155,10 +187,13 @@ def makereport(month):
 #    import os,subprocess
 
 #    fileout = os.path.splitext(reported)[0] + '.docx'
-#    args =  ['pandoc', '-s','-S', reported, '-o', fileout,]
-#    print(args)
-#    subprocess.Popen(args, stdout=subprocess.PIPE)
-#    print subprocess.call(args)
+#    args1 =  ['cd',os.path.split(reported)[0]]
+#    print(args1)
+#    args2 =  ['pandoc', '-s','-S', os.path.split(reported)[1], '-o', os.path.split(fileout)[1]]
+#    print(args2)
+#    subprocess.Popen(args1)
+#    subprocess.Popen(args2)
+#    print subprocess.check_call(args1)
 
 def newproject():
     ''' 
