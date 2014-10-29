@@ -53,10 +53,10 @@ planperday = 8.
 
 # import data
 
-datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
-plandir = 'C:/Users/Bryce/Dropbox/tracker_data/'
+datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
+plandir = 'C:/Users/bjb40/Dropbox/tracker_data/'
 
-con = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
+con = dbapi.connect('C:/Users/bjb40/Dropbox/tracker_data/admin.db')
 cur = con.cursor()
 # moving from unicode to text : 
 con.text_factory = str

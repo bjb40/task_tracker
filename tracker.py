@@ -50,15 +50,25 @@ class Timer(object):
 
 
 #initialize variables
-datref = 'C:/Users/Bryce/Dropbox/tracker_data/daily_tasks.csv'
+datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
 current = date.today()
 today = current.strftime('%m-%d')
 hour = now.strftime("%H:%M")
 
-con = dbapi.connect('C:/Users/Bryce/Dropbox/tracker_data/admin.db')
+con = dbapi.connect('C:/Users/bjb40/Dropbox/tracker_data/admin.db')
 cur = con.cursor()
-# moving from unicode to text : 
+#moving from unicode to text : 
 con.text_factory = str
+
+#list high level tasks
+def todo():
+    print("\nCurrent high-level task list:\nPriority  | Deadline   | Countdown to  Task")
+    cur.execute('SELECT priority, task, deadline, project FROM todo WHERE complete is null ')
+    for i in cur.fetchall():
+        deadline = datetime.datetime.strptime(i[2],"%Y,%m,%d")
+        left = deadline.date() - current
+        print(" %d        | %s      | %s days to %s" % (i[0], deadline.strftime('%m-%d'), left.days, i[1]))
+    print ("\n\n")
 
 plist = {}
 cur.execute('SELECT project_name,production FROM projects')
@@ -67,6 +77,7 @@ for name, prod in cur.fetchall():
 
 #request input variables
 loc = raw_input("Location(string): ")
+todo()
 task = raw_input("What is the task: ")
 tag = raw_input("Project name: ")
 
@@ -80,7 +91,7 @@ hours_month = 0.
 phours_month = 0.
 hours_week = 0.
 
-daysdat = pandas.read_csv('C:/Users/Bryce/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
+daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
 days_month = 0
 days_week = 0
 for i in range(len(daysdat)):
