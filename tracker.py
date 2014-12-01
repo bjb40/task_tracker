@@ -12,7 +12,7 @@ import time as now
 import pandas
 import csv
 import sqlite3 as dbapi
-
+2
 
 #Define Timer Object
 class Timer(object):
@@ -116,15 +116,15 @@ for i in range(0,len(pdat)):
                hours_day += float(pdat['min_spent'][i])
                hours_month -= float(pdat['min_spent'][i])
 
-avhours_month = hours_month/(60.*float(days_month))
-avphours_month = phours_month/(60.*float(days_month))
 
 print ('\nHours today so far:                             %.2f' % float(hours_day/60.))
 
 if float(days_month) > 0:
+    avhours_month = hours_month/(60.*float(days_month))
+    avphours_month = phours_month/(60.*float(days_month))
     print ("Average hours per workday (" + str(days_month) + ") this month:     %.2f" % avhours_month )
-    print ('\n\nCurrent conversion rate:                        %.2f' % float(avhours_month/8.) )
-    print ('Current production ratio:                       %.2f' % float(avphours_month/avhours_month) )
+    print ('\n\nCurrent conversion rate (target=1.25):          %.2f' % float(avhours_month/8.) )
+    print (    'Current production ratio(target=0.60):          %.2f' % float(avphours_month/avhours_month) )
 else:
     print ("\n\nFirst day of the month - good luck!")
 
