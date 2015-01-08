@@ -4,7 +4,6 @@ This is a simple task-tracker that saves data into a pre-specified csv location.
 
 """
 
-
 # import dependencies
 from datetime import date, timedelta as td
 import datetime
@@ -91,7 +90,7 @@ hours_month = 0.
 phours_month = 0.
 hours_week = 0.
 
-daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2014.csv')
+daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2015.csv')
 days_month = 0
 days_week = 0
 for i in range(len(daysdat)):

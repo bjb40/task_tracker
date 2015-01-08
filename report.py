@@ -34,14 +34,14 @@ Notes Table
 """
 
 print ('Functions:\n\n' +
-'Plan a month:               makeplan(month)\n' +
+       'Plan a month:               makeplan(month,year) (month is two digits, year is four digits) \n' +
 'Create a monthly report:    makereport(month)\n' + 
 'Start a new project:        newproject()\n' +
 'Print Summary of Project:   projectsum()\n')
 
 # import dependencies
 
-import datetime
+import time, datetime
 from datetime import date, timedelta as td
 import sqlite3 as dbapi
 import calendar
@@ -61,28 +61,24 @@ cur = con.cursor()
 # moving from unicode to text : 
 con.text_factory = str
 
-# prepare a funciton to populate a .csv for monthly planning purposes 
-def makeplan(month):
+# prepare a funciton to populate database for  monthly planning purposes
+# need to create an overwrite check 
+def makeplan(month,year):
     '''
     Input a month to create a print-out of the month.
     '''
-    start_date = date(2014, month, 1)
-    end_date = date(2014, month, 31) #need to write break because not all months have 31 days
+    start_date = date(year, month, 1)
+    end_date = date(year, month, 31) #need to write break because not all months have 31 days - also need to fix year 
 
     delta = end_date - start_date
 
-    plan = open(plandir + str(month) + '-2014.csv', 'a')
-
-    plan.write('day,weekday')
-
     for i in range(delta.days + 1):
-        print('writing '+ (start_date + td(days=i)).strftime('%m-%d') )
-        plan.write("\n'" + (start_date + td(days=i)).strftime('%m-%dd')[1:-1] + "'," )
-        plan.write(str((start_date + td(days=i)).weekday()))
-        
-    print('now closing')
-    plan.close()
-
+        dt = (start_date + td(days=i)).strftime('%Y-%m-%d %H:%M:%S')
+        wkday = int((start_date + td(days=i)).weekday())
+        print('writing '+ str(dt) + str(wkday))
+        cur.execute("INSERT INTO plan (datecol,weekday,holiday) VALUES (?, ?, ?)", (dt,wkday,0))
+ 
+    con.commit()
 
 #make a simple report based on previous plan
 def makereport(month):
