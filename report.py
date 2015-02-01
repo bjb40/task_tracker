@@ -68,7 +68,7 @@ def makeplan(month,year):
     Input a month to create a print-out of the month.
     '''
     start_date = date(year, month, 1)
-    end_date = date(year, month, 31) #need to write break because not all months have 31 days - also need to fix year 
+    end_date = date(year, month, calendar.monthrange(year,month)[1]) # need to fix year 
 
     delta = end_date - start_date
 
@@ -79,6 +79,19 @@ def makeplan(month,year):
         cur.execute("INSERT INTO plan (datecol,weekday,holiday) VALUES (?, ?, ?)", (dt,wkday,0))
  
     con.commit()
+
+# to be depricated once all of the database stuff is up:
+
+    plan = open(plandir + str(month) + '-2015.csv', 'a')
+    plan.write('day,weekday')
+
+    for i in range(delta.days + 1):
+        print('writing '+ (start_date + td(days=i)).strftime('%m-%d') )
+        plan.write("\n'" + (start_date + td(days=i)).strftime('%m-%dd')[1:-1] + "'," )
+        plan.write(str((start_date + td(days=i)).weekday()))
+
+    print('now closing')
+    plan.close()
 
 #make a simple report based on previous plan
 def makereport(month):

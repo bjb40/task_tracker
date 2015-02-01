@@ -85,19 +85,27 @@ go = Timer()
 go.start()
 
 #Load Timer Messages
+#hours actually track minutes - variables need renamed
 hours_day = 0.
 hours_month = 0.
 phours_month = 0.
 hours_week = 0.
 
 daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2015.csv')
+tot_month = 0
 days_month = 0
 days_week = 0
+conv_target = 1.25
+prod_target = 0.6
+
 for i in range(len(daysdat)):
     if daysdat["holiday"][i] == 0 and daysdat["weekday"][i] < 5:
+        tot_month += 1.
         if datetime.datetime.strptime(daysdat["day"][i],"%m-%d").date().day < current.day:
             days_month += 1.
 
+min_need = tot_month*8.*conv_target*60.
+prod_need = min_need*prod_target
 
 pdat = pandas.read_csv(datref)
 
@@ -115,21 +123,31 @@ for i in range(0,len(pdat)):
                hours_day += float(pdat['min_spent'][i])
                hours_month -= float(pdat['min_spent'][i])
 
+days_left = float(tot_month - days_month)
+avhours_need = (min_need - hours_month) / (60.*days_left)
+avprod_need = (prod_need - phours_month) / (60.*days_left)
 
-print ('\nHours today so far:                             %.2f' % float(hours_day/60.))
+print ('\n%.0f days worked this month; %.0f remaining.' % (float(days_month), float(days_left)) )
+print ('Hours today so far:                       %.2f\n' % float(hours_day/60.))
 
 if float(days_month) > 0:
     avhours_month = hours_month/(60.*float(days_month))
     avphours_month = phours_month/(60.*float(days_month))
-    print ("Average hours per workday (" + str(days_month) + ") this month:     %.2f" % avhours_month )
-    print ('\n\nCurrent conversion rate (target=1.25):          %.2f' % float(avhours_month/8.) )
-    print (    'Current production ratio(target=0.60):          %.2f' % float(avphours_month/avhours_month) )
+  
+
+    print ('Average hours per workday this month:     %.2f' % avhours_month )
+    print ('Average hours needed now:                 %.2f' % float(avhours_need) )
+    print ('Production hours per day needed:          %.2f\n' % float(avprod_need)  ) 
+    print ('\nCurrent conversion rate (target=%.2f):    %.2f' % (float(conv_target),float(avhours_month/8.)) )
+    print (  'Current production ratio(target=%.2f):    %.2f' % (float(prod_target),float(avphours_month/avhours_month)) )
+
+
 else:
     print ("\n\nFirst day of the month - good luck!")
 
 
 #Request timer completion
-complete = raw_input("Task timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
+complete = raw_input("\nTask timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
 go.stop()
 
 
