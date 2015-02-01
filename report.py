@@ -35,7 +35,7 @@ Notes Table
 
 print ('Functions:\n\n' +
        'Plan a month:               makeplan(month,year) (month is two digits, year is four digits) \n' +
-'Create a monthly report:    makereport(month)\n' + 
+       'Create a monthly report:    makereport(month, year) (month is two digits, year is four digits\n' + 
 'Start a new project:        newproject()\n' +
 'Print Summary of Project:   projectsum()\n')
 
@@ -94,10 +94,10 @@ def makeplan(month,year):
     plan.close()
 
 #make a simple report based on previous plan
-def makereport(month):
+def makereport(month, year):
     '''
-    Create a time report based on an input of the month -- two digit number which must be input
-    as string (i.e. to make Septermber report, use makereport('09').
+    Create a time report based on an input of month and year, for example, to make September 2014 report, 
+    use makereport(09,2014).
     '''
 
     import scipy as sp
@@ -105,9 +105,14 @@ def makereport(month):
     import pandas
     #>> Read in the data #
     repmonth = str(month)
+    if len(repmonth) == 1:
+        repmonth = '0' + repmonth
+
+    repyear = str(year)
     repdate = datetime.datetime.now()
     pdat = pandas.read_csv(datref)
-    daysdat = pandas.read_csv(plandir + 'plan-' + repmonth + '-2014.csv')
+    #print(plandir + 'plan-' + repmonth + '-' + repyear + '.csv')
+    daysdat = pandas.read_csv(plandir + 'plan-' + repmonth + '-' + repyear + '.csv')
 
     # set counter for workdays
     workdays = 0
@@ -157,7 +162,7 @@ def makereport(month):
     prodratio = avproday/avperday
 
     #>> call pandoc and build a .pdf or .html or .docx document for printing#
-    reported = plandir + repmonth + '-report.md'
+    reported = plandir + repyear + '-' + repmonth + '-report.md'
     makerep = open(reported, 'w')
 
     #yaml header
