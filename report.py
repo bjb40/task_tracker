@@ -258,17 +258,22 @@ def projectsum():
     # Read the data
     pdat = pandas.read_csv(datref)
     worked = 0. # counter for minutes
+    tasks = [] # list of tasks - should make a dictionary to include hours
 
     #Iterate through entire list
     for i in range(0,len(pdat)):
         if pdat['project'][i] == p:
             worked += float(pdat['min_spent'][i])
+            tasks.append(str(pdat['task'][i]))
 
     hours = round(worked/60.,3)
-    print 'Worked on ' + p + ' %.3f hours.' % hours 
+    print '\n\nWorked on ' + p + ' %.3f hours.\n\n' % hours 
+
+    for j in range(0,len(tasks)):
+        print('\t' + tasks[j] + '\n')
+
+
 
     #For analyzing transition time -- later
 #    import datetime
 #    today = datetime.datetime.now()
-
-
