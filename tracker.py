@@ -128,13 +128,14 @@ avhours_need = (min_need - hours_month) / (60.*days_left)
 avprod_need = (prod_need - phours_month) / (60.*days_left)
 
 print ('\n%.0f days worked this month; %.0f remaining.' % (float(days_month), float(days_left)) )
-print ('Hours today so far:                       %.2f\n' % float(hours_day/60.))
+print ('Hours today so far:                       %.2f\n\n' % float(hours_day/60.))
 
 if float(days_month) > 0:
     avhours_month = hours_month/(60.*float(days_month))
     avphours_month = phours_month/(60.*float(days_month))
   
 
+    print ('Total hours worked so far this month:     %.2f' % hours_month )
     print ('Average hours per workday this month:     %.2f' % avhours_month )
     print ('Average hours needed now:                 %.2f' % float(avhours_need) )
     print ('Production hours per day needed:          %.2f\n' % float(avprod_need)  ) 
