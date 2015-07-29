@@ -135,7 +135,7 @@ if float(days_month) > 0:
     avphours_month = phours_month/(60.*float(days_month))
   
 
-    print ('Total hours worked so far this month:     %.2f' % hours_month )
+    print ('Total hours worked so far this month:     %.2f' % float(hours_month/60.) )
     print ('Average hours per workday this month:     %.2f' % avhours_month )
     print ('Average hours needed now:                 %.2f' % float(avhours_need) )
     print ('Production hours per day needed:          %.2f\n' % float(avprod_need)  ) 
