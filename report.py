@@ -170,7 +170,8 @@ def makereport(month, year):
 
     #output for monthly overview
     makerep.write('#Overview#\n\n')
-    makerep.write('Planned for ' + str(workdays) + ' days of work in August.\n\n')
+    #print(calendar.month_name[int(month)])
+    makerep.write('Planned for ' + str(workdays) + ' days of work in ' + str(calendar.month_name[int(month)]) + '.\n\n')
     makerep.write('Worked a total of %.2f hours, ' % hours)
     makerep.write('which amounts to an average of %.2f hours per work day.\n\n' % avperday)
     makerep.write('Of this, %.2f hours, or %.2f per day, was work directly related to publication.\n\n\n' % (prodhours, avproday))

@@ -100,12 +100,17 @@ prod_target = 0.6
 
 for i in range(len(daysdat)):
     if daysdat["holiday"][i] == 0 and daysdat["weekday"][i] < 5:
+        #pull day and month from plan, and add current year
+        d = daysdat["day"][i] + '-'+ str(current.year)
+        #transform to datetime object
+        dt = datetime.datetime.strptime(d,"%m-%d-%Y")
         tot_month += 1.
-        if datetime.datetime.strptime(daysdat["day"][i],"%m-%d").date().day < current.day:
+        if dt.date().day < current.day:
             days_month += 1.
 
 min_need = tot_month*8.*conv_target*60.
 prod_need = min_need*prod_target
+
 
 pdat = pandas.read_csv(datref)
 
