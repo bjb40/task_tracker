@@ -59,14 +59,16 @@ cur = con.cursor()
 #moving from unicode to text : 
 con.text_factory = str
 
-#list high level tasks
+#listS high level tasks
 def todo():
-    print("\nCurrent high-level task list:\nPriority  | Deadline   | Countdown to  Task")
+    print("\nCurrent high-level task list:\nPr |Project\t|Deadline | Countdown to  Task\n")
     cur.execute('SELECT priority, task, deadline, project FROM todo WHERE complete is null ')
-    for i in cur.fetchall():
-        deadline = datetime.datetime.strptime(i[2],"%Y,%m,%d")
+    order = sorted([(i[0],datetime.datetime.strptime(i[2],"%Y,%m,%d"),i[1],i[3]) for i in cur.fetchall()])
+
+    for i in order:
+        deadline = i[1]
         left = deadline.date() - current
-        print(" %d        | %s      | %s days to %s" % (i[0], deadline.strftime('%m-%d'), left.days, i[1]))
+        print(" %d |%s\t| %s   | %s days to %s" % (i[0], i[3][0:10],deadline.strftime('%m-%d'), left.days, i[2]))
     print ("\n\n")
 
 plist = {}
