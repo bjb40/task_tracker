@@ -52,6 +52,7 @@ class Timer(object):
 datref = 'C:/Users/bjb40/Dropbox/tracker_data/daily_tasks.csv'
 current = date.today()
 today = current.strftime('%m-%d')
+ty = current.strftime('%Y')
 hour = now.strftime("%H:%M")
 
 con = dbapi.connect('C:/Users/bjb40/Dropbox/tracker_data/admin.db')
@@ -93,7 +94,7 @@ hours_month = 0.
 phours_month = 0.
 hours_week = 0.
 
-daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-2015.csv')
+daysdat = pandas.read_csv('C:/Users/bjb40/Dropbox/tracker_data/plan-' + str(today)[0:2] + '-' + ty + '.csv')
 tot_month = 0
 days_month = 0
 days_week = 0
