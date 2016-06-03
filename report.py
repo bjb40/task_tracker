@@ -67,30 +67,59 @@ def makeplan(month,year):
     '''
     Input a month to create a print-out of the month.
     '''
+    #print(month,year)
+    strmonth = "%02d" % month #two-digit string for month
     start_date = date(year, month, 1)
     end_date = date(year, month, calendar.monthrange(year,month)[1]) # need to fix year 
 
     delta = end_date - start_date
 
-    for i in range(delta.days + 1):
-        dt = (start_date + td(days=i)).strftime('%Y-%m-%d %H:%M:%S')
-        wkday = int((start_date + td(days=i)).weekday())
-        print('writing '+ str(dt) + str(wkday))
-        cur.execute("INSERT INTO plan (datecol,weekday,holiday) VALUES (?, ?, ?)", (dt,wkday,0))
+#    for i in range(delta.days + 1):
+#        dt = (start_date + td(days=i)).strftime('%Y-%m-%d %H:%M:%S')
+#        wkday = int((start_date + td(days=i)).weekday())
+#        print('writing '+ str(dt) + str(wkday))
+#        cur.execute("INSERT INTO plan (datecol,weekday,holiday) VALUES (?, ?, ?)", (dt,wkday,0))
  
-    con.commit()
+#    con.commit()
 
-# to be depricated once all of the database stuff is up:
+# to be depricated once all of the database stuff is up (from above):
 
-    plan = open(plandir + str(month) + '-2015.csv', 'a')
-    plan.write('day,weekday')
+    hd_input = raw_input("Enter holidays (SPACE separated digits): ")
+    hd = map(int,hd_input.split())
+    print(type(hd[0]))
 
+    pdir = plandir + 'plan-' + strmonth + '-' + str(year) + '.csv'
+    print('Writing to file: ' + pdir)
+    plan = open(pdir, 'w')
+    plan.write('day,weekday,holiday')
+    
+    holidays=len(hd)
+    weekdays=0
+    weekends=0
+    
     for i in range(delta.days + 1):
-        print('writing '+ (start_date + td(days=i)).strftime('%m-%d') )
-        plan.write("\n'" + (start_date + td(days=i)).strftime('%m-%dd')[1:-1] + "'," )
-        plan.write(str((start_date + td(days=i)).weekday()))
+        #print('writing '+ (start_date + td(days=i)).strftime('%m-%dd') )
+        #d = (start_date + td(days=i))
+        #.strftime('%m-%dd')[1:-1]
+        #print d.strftime('%m-%d')
+        h=0 #holiday space holder
+        d= start_date + td(days=i)
+        #print(d.day,type(d.day))
+        if d.day in hd:
+            print(d.day)
+            h=1
+        plan.write("\n" + d.strftime('%m-%d') + ',')
+        plan.write(str(d.weekday())+',' + str(h))
+        if d.weekday()<5: #sat=5, sun=6 
+            weekdays += 1
+        elif(d.weekday()>=5):
+            weekends += 1
 
-    print('now closing')
+        
+    #print('now closing file \n\n')
+    print(calendar.month(year,month))
+    print('\n\nWorkdays Off:' + hd_input)
+    print '\n\nSummary\n\nWeekdays:\t {0} \nWeekends:\t {1} \nHolidays:\t {2} \nWorkdays:\t {3}'.format(weekdays,weekends,holidays,weekdays-holidays)
     plan.close()
 
 #make a simple report based on previous plan
