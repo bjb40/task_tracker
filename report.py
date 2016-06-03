@@ -86,10 +86,9 @@ def makeplan(month,year):
 
     hd_input = raw_input("Enter holidays (SPACE separated digits): ")
     hd = map(int,hd_input.split())
-    print(type(hd[0]))
-
+    
     pdir = plandir + 'plan-' + strmonth + '-' + str(year) + '.csv'
-    print('Writing to file: ' + pdir)
+    print('\n\nWriting to file: ' + pdir + '\n\n')
     plan = open(pdir, 'w')
     plan.write('day,weekday,holiday')
     
