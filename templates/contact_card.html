@@ -6,7 +6,8 @@
 
   <body>
 
-    <form>
+    
+    <form action="{{action}}" method="post">
 
       {% for n in name %}
 
@@ -16,12 +17,18 @@
         <input type="text" name={{k}} value="{{n[k]}}"></input></p>
 
 	{% endfor %}
-	{% endfor %}
-
+	
       <br><br>
-      <input type="submit" value="Save/Update"></input>
-      
+      <input type="submit" value="Save/Update"></input>	
+      {% endfor %}
+            
     </form>
+
+    <br><br>
+    <a href='/new'>Make New Contact</a>
+
+        <br><br>
+    <a href='/contacts.html'>Back to List</a>
     
   </body>
 </html>

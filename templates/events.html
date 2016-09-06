@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>List of Events for {{name}}</title>
+  </head>
+
+  <body>
+    <h3>Events for {{name}}</h3>
+        <a href='/newevent?name={{name}}'>Add Event</a>
+<br><br>
+
+{% for e in events %}
+
+<hr>
+
+<table>
+    {% for k in keys %}
+    <tr>
+      <td> {{k}} </td>
+      <td> {{e[k]}} </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+{% endfor %}
+  </body>
+</html>

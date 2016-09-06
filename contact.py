@@ -6,12 +6,12 @@ Collects notes and tracks connections (and ties between contacts)
 Bryce Bartlett
 """
 
-from flask import Flask, render_template, g, request, redirect, url_for
-import sqlite3, os
+from flask import Flask, render_template, g, request, redirect, url_for, flash
+import sqlite3, os, datetime
 
 app = Flask(__name__)
 
-#db functions taken from https://github.com/pallets/flask/blob/master/examples/flaskr/flaskr/flaskr.py
+#db functions revised from https://github.com/pallets/flask/blob/master/examples/flaskr/flaskr/flaskr.py
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -68,14 +68,106 @@ def card():
     cur=db.execute("SELECT * FROM card WHERE NAME=?", (cname,))
     srch=cur.fetchall()
     keys=srch[0].keys()
-    return render_template('contact_card.html',name=srch,keys=keys)
+    return render_template('contact_card.html',name=srch,keys=keys,action=url_for('update_entry'))
 
+@app.route('/new')
+def make_new():
+    db=get_db()
+    cur=db.execute("select * from card")
+    keys=list(map(lambda x: x[0], cur.description))
+    keys.remove("ID")
+    return render_template('contact_card.html',name=[[""]*len(keys)],keys=keys,action=url_for('add_entry'))
+
+@app.route('/update', methods=['POST'])
+def update_entry():
+    db = get_db()
+    db.execute('UPDATE card SET NAME=?, EMAIL=?, PHONE=?, NETWORK=?, NOTES=?, JOB=?, INDUSTRY=? WHERE ID=?',
+               [request.form['NAME'],
+                request.form['EMAIL'],
+                request.form['PHONE'],
+                request.form['NETWORK'],
+                request.form['NOTES'],
+                request.form['JOB'],
+                request.form['INDUSTRY'],
+                request.form['ID']])
+    db.commit()
+    #return render_template('contact_card.html')
+    #flash('New contact created.')
+    return redirect(url_for('contacts'))
+
+@app.route('/add', methods=['POST'])
+def add_entry():
+    db = get_db()
+    db.execute('insert into card (NAME, EMAIL, PHONE, NETWORK, NOTES, JOB, INDUSTRY) values (?, ?, ?, ?, ?, ?, ?)',
+               [request.form['NAME'],
+                request.form['EMAIL'],
+                request.form['PHONE'],
+                request.form['NETWORK'],
+                request.form['NOTES'],
+                request.form['JOB'],
+                request.form['INDUSTRY']
+               ])
+    db.commit()
+    #return render_template('contact_card.html')
+    #flash('New contact created.')
+    return redirect(url_for('contacts'))
+
+####
+#Event Tracking
+####
+
+@app.route('/events.html')
+def list_events():
+    cname=request.args.get('name','')
+    db=get_db()
+    cur=db.execute("SELECT ID FROM card where NAME=?",(cname,))
+    n_id=cur.fetchall()[0][0]
+    cur=db.execute("SELECT * FROM events WHERE CONTACT=?", (n_id,))
+    srch=cur.fetchall()
+    keys=srch[0].keys()
+    return render_template('events.html',name=cname,keys=keys,events=srch)
+
+@app.route('/newevent')
+def make_newevent():
+    cname=request.args.get('name','')
+    db=get_db()
+    cur=db.execute("SELECT ID FROM card where NAME=?",(cname,))
+    n_id=cur.fetchall()[0][0]
+    cur=db.execute("select * from events")
+    keys=list(map(lambda x: x[0], cur.description))
+    keys.remove("EVENTID")
+    nm=[dict(zip(keys,[""]*len(keys)))]
+    nm[0]['CONTACT']=n_id
+    d=datetime.datetime.now()
+    nm[0]['DATE']=d.strftime('%Y-%m-%d')
+    #nm[0]['DATE']=d.strftime('%Y-%m-%d %H:%M:%S')
+    return render_template('contact_card.html',name=nm,keys=keys,action=url_for('add_event'))
+
+    
+@app.route('/addevent', methods=['POST'])
+def add_event():
+    db = get_db()
+    db.execute('insert into events (DATE,CHANNEL,NOTES,CONTACT) values (?, ?, ?, ?)',
+               [request.form['DATE'],
+                request.form['CHANNEL'],
+                request.form['NOTES'],
+                request.form['CONTACT'],
+               ])
+    db.commit()
+    n=db.execute('select NAME from card WHERE ID=?', (request.form["CONTACT"]))
+    cname=n.fetchall()[0][0]
+    return redirect(url_for('list_events',name=cname))
+    
 if __name__ == "__main__":
     app.run()
 
+with app.test_request_context():
+    cname='John Doe'
+    u=url_for('list_events',name=cname)
+    
 #testing 
 #with app.test_request_context():
-#    db=get_db()
+    #    db=get_db()
 #    cur=db.execute("SELECT * FROM card WHERE NAME=?", ("John Doe",))
 #    srch=cur.fetchall()
 #    print srch[0].keys()
