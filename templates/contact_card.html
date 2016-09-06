@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Contact Card</title>
+  </head>
+
+  <body>
+
+    <form>
+
+      {% for n in name %}
+
+        {% for k in keys %}
+   
+        <p>{{k}}
+        <input type="text" name={{k}} value="{{n[k]}}"></input></p>
+
+	{% endfor %}
+	{% endfor %}
+
+      <br><br>
+      <input type="submit" value="Save/Update"></input>
+      
+    </form>
+    
+  </body>
+</html>

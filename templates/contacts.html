@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ author }}'s app</title>
+  </head>
+
+  <body>
+
+
+  <ul>
+    {% for n in names %}
+      <a href="card.html?name={{n[0]}}">{{ n[0] }}</a><br>
+    {% endfor %}
+  </ul>
+    
+  </body>
+</html>
