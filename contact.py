@@ -15,7 +15,8 @@ app = Flask(__name__)
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'contacts.db'),
+    #DATABASE=os.path.join(app.root_path, 'contacts.db'),
+    DATABASE='C:/Users/bjb40/Dropbox/tracker_data/contacts.db',
     DEBUG=True,
     SECRET_KEY='development key',
     USERNAME='admin',
@@ -40,7 +41,7 @@ def get_db():
 
 @app.before_request
 def before_request():
-    g.db = sqlite3.connect("contacts.db")
+    g.db = sqlite3.connect("C:/Users/bjb40/Dropbox/tracker_data/contacts.db")
 
 @app.teardown_request
 def teardown_request(exception):
