@@ -11,7 +11,7 @@ import time as now
 import pandas
 import csv
 import sqlite3 as dbapi
-2
+import re
 
 #Define Timer Object
 class Timer(object):
@@ -72,6 +72,25 @@ def todo():
         print(" %d |%s\t| %s   | %s days to %s" % (i[0], i[3][0:10],deadline.strftime('%m-%d'), left.days, i[2]))
     print ("\n\n")
 
+#id key tasks (can make dynamic based on topic models): (1) code, (2) write, (3) revise
+tasktype={
+    'writing' : re.compile('wr[io]t[eing]+',re.IGNORECASE),
+    'coding' : re.compile('cod[eing]+',re.IGNORECASE),
+    'revising' : re.compile('revis[ionged]',re.IGNORECASE)
+}
+
+pdat = pandas.read_csv(datref)
+
+##should use this to simplify code above; instead of looping
+pdatm=pdat[pdat['date'].str.contains(str(current.month)+'-')]
+print '---------------------\nKey Task Overview:\n---------------------\n'
+for t in tasktype.keys():
+    prop=sum(pdatm[pdatm['task'].str.contains(tasktype[t])]['min_spent'])/sum(pdatm['min_spent'])
+    print 'Proportion of month spent %s:\t %.2f' % (t,prop)
+
+print('\n\nNote: not mutually exclusive...\n---------------------\n')
+
+    
 plist = {}
 cur.execute('SELECT project_name,production FROM projects')
 for name, prod in cur.fetchall():
@@ -79,7 +98,7 @@ for name, prod in cur.fetchall():
 
 #request input variables
 loc = raw_input("Location(string): ")
-todo()
+#todo()
 task = raw_input("What is the task: ")
 tag = raw_input("Project name: ")
 
@@ -113,9 +132,6 @@ for i in range(len(daysdat)):
 
 min_need = tot_month*8.*conv_target*60.
 prod_need = min_need*prod_target
-
-
-pdat = pandas.read_csv(datref)
 
 for i in range(0,len(pdat)):
     if str(pdat['date'][i])[0:2] == str(today)[0:2]:
@@ -179,4 +195,6 @@ print "Appending to data . . . \n\n\nMinutes Spent:", min_spent
 print "Task " + success + ".\n\n\n\n"
 hours_day += float(min_spent)
 print ("Hours today now " + str(round(hours_day/60.,2)) + ".")
+
+
 
