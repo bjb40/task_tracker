@@ -60,7 +60,7 @@ cur = con.cursor()
 #moving from unicode to text : 
 con.text_factory = str
 
-#listS high level tasks
+#lists high level tasks--don't use/consider deleting
 def todo():
     print("\nCurrent high-level task list:\nPr |Project\t|Deadline | Countdown to  Task\n")
     cur.execute('SELECT priority, task, deadline, project FROM todo WHERE complete is null ')
@@ -84,6 +84,11 @@ pdat = pandas.read_csv(datref)
 ##should use this to simplify code above; instead of looping
 pdatm=pdat[pdat['date'].str.contains(str(current.month)+'-')]
 print '---------------------\nKey Task Overview:\n---------------------\n'
+
+if sum(pdatm['min_spent']) == 0:
+    print 'Beginning of Month: Here are last month\'s figures\n'
+    pdatm=pdat[pdat['date'].str.contains(str(current.month-1)+'-')]
+
 for t in tasktype.keys():
     prop=sum(pdatm[pdatm['task'].str.contains(tasktype[t])]['min_spent'])/sum(pdatm['min_spent'])
     print 'Proportion of month spent %s:\t %.2f' % (t,prop)
