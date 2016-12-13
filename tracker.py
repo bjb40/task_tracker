@@ -1,3 +1,4 @@
+#!python3.5
 """
 
 This is a simple task-tracker that saves data into a pre-specified csv location.
@@ -83,15 +84,15 @@ pdat = pandas.read_csv(datref)
 
 ##should use this to simplify code above; instead of looping
 pdatm=pdat[pdat['date'].str.contains(str(current.month)+'-')]
-print '---------------------\nKey Task Overview:\n---------------------\n'
+print('---------------------\nKey Task Overview:\n---------------------\n')
 
 if sum(pdatm['min_spent']) == 0:
-    print 'Beginning of Month: Here are last month\'s figures\n'
+    print('Beginning of Month: Here are last month\'s figures\n')
     pdatm=pdat[pdat['date'].str.contains(str(current.month-1)+'-')]
 
 for t in tasktype.keys():
     prop=sum(pdatm[pdatm['task'].str.contains(tasktype[t])]['min_spent'])/sum(pdatm['min_spent'])
-    print 'Proportion of month spent %s:\t %.2f' % (t,prop)
+    print('Proportion of month spent %s:\t %.2f' % (t,prop))
 
 print('\n\nNote: not mutually exclusive...\n---------------------\n')
 
@@ -102,10 +103,10 @@ for name, prod in cur.fetchall():
     plist[name] = prod 
 
 #request input variables
-loc = raw_input("Location(string): ")
+loc = input("Location(string): ")
 #todo()
-task = raw_input("What is the task: ")
-tag = raw_input("Project name: ")
+task = input("What is the task: ")
+tag = input("Project name: ")
 
 #start timer
 go = Timer()
@@ -177,7 +178,7 @@ else:
 
 
 #Request timer completion
-complete = raw_input("\nTask timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
+complete = input("\nTask timer begun at \n" + str(go.start) + "\n\n\nEnter 1 (complete) or 0 (incomplete) to stop: ")
 go.stop()
 
 
@@ -196,8 +197,8 @@ success = "failed"
 if int(complete) == 1:
     success = "succeeded"
 
-print "Appending to data . . . \n\n\nMinutes Spent:", min_spent
-print "Task " + success + ".\n\n\n\n"
+print ("Appending to data . . . \n\n\nMinutes Spent:", min_spent)
+print ("Task " + success + ".\n\n\n\n")
 hours_day += float(min_spent)
 print ("Hours today now " + str(round(hours_day/60.,2)) + ".")
 
