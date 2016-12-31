@@ -154,9 +154,16 @@ for i in range(0,len(pdat)):
                hours_month -= float(pdat['min_spent'][i])
 
 days_left = float(tot_month - days_month)
-avhours_need = (min_need - hours_month) / (60.*days_left)
-avprod_need = (prod_need - phours_month) / (60.*days_left)
 
+#you can probably simplify this...
+if days_left>0:
+    avhours_need = (min_need - hours_month) / (60.*days_left)
+    avprod_need = (prod_need - phours_month) / (60.*days_left)
+else:
+    avhours_need = (min_need - hours_month) / 60.
+    avprod_need = (prod_need -phours_month) /60.
+
+    
 print ('\n%.0f days worked this month; %.0f remaining.' % (float(days_month), float(days_left)) )
 print ('Hours today so far:                       %.2f\n\n' % float(hours_day/60.))
 
