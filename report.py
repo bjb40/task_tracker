@@ -84,15 +84,16 @@ def makeplan(month,year):
 
 # to be depricated once all of the database stuff is up (from above):
 
-    hd_input = raw_input("Enter holidays (SPACE separated digits): ")
-    hd = map(int,hd_input.split())
+    #month=str(month); year=str(year)
+    hd_input = str(input("Enter holidays (SPACE separated digits): "))
+    #hd = map(int,hd_input.split())
     
     pdir = plandir + 'plan-' + strmonth + '-' + str(year) + '.csv'
     print('\n\nWriting to file: ' + pdir + '\n\n')
     plan = open(pdir, 'w')
     plan.write('day,weekday,holiday')
     
-    holidays=len(hd)
+    holidays=len(hd_input.split())
     weekdays=0
     weekends=0
     
@@ -104,7 +105,7 @@ def makeplan(month,year):
         h=0 #holiday space holder
         d= start_date + td(days=i)
         #print(d.day,type(d.day))
-        if d.day in hd:
+        if d.day in map(int,hd_input.split()):
             print(d.day)
             h=1
         plan.write("\n" + d.strftime('%m-%d') + ',')
@@ -118,7 +119,7 @@ def makeplan(month,year):
     #print('now closing file \n\n')
     print(calendar.month(year,month))
     print('\n\nWorkdays Off:' + hd_input)
-    print '\n\nSummary\n\nWeekdays:\t {0} \nWeekends:\t {1} \nHolidays:\t {2} \nWorkdays:\t {3}'.format(weekdays,weekends,holidays,weekdays-holidays)
+    print('\n\nSummary\n\nWeekdays:\t {0} \nWeekends:\t {1} \nHolidays:\t {2} \nWorkdays:\t {3}'.format(weekdays,weekends,holidays,weekdays-holidays))
     plan.close()
 
 #make a simple report based on previous plan
@@ -258,7 +259,7 @@ def newproject():
     cur.execute('SELECT MAX(number) FROM projects')
     newnum = cur.fetchall()[0][0] + 1
 
-    print 'Creating record with the following values:'
+    print('Creating record with the following values:')
     print (1,name,description,notes,production,1,start_date,'','','','','','','')
 
     cur.execute('INSERT INTO projects VALUES(?,?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL)', (newnum,name,description,notes,collab,production,1,start_date))
@@ -278,7 +279,7 @@ def projectsum():
     cur.execute('SELECT project_name FROM projects')
     p_list = cur.fetchall()
     for i in p_list:
-        print i[0]
+        print(i[0])
     
     p = raw_input("Identify wich project (listed above) you want summarized: ")
     import scipy as sp
@@ -296,7 +297,7 @@ def projectsum():
             tasks.append(str(pdat['task'][i]))
 
     hours = round(worked/60.,3)
-    print '\n\nWorked on ' + p + ' %.3f hours.\n\n' % hours 
+    print('\n\nWorked on ' + p + ' {:.3f} hours.\n\n').format(hours) 
 
     for j in range(0,len(tasks)):
         print('\t' + tasks[j] + '\n')
