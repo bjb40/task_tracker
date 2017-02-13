@@ -10,11 +10,22 @@
 <br><br>
 
 
-  <h2>
-    {% for l in levs %}
-        {{l[0]}}  
+
+  {% for l in summ recursive %}
+<h2>{{l}}</h2>
+<ul>
+  {% if summ[l] %}
+
+  <li> {{loop(summ[l].keys())}}
+
+  {% endif %}
+</ul>
+
+
+
     {% endfor %}
-  </h2>
+
+
     
   </body>
 </html>

@@ -66,17 +66,30 @@ def contacts():
 @app.route('/summary.html')
 def summary():
     
-    levs = g.db.execute('SELECT circle FROM FREQ').fetchall()
+    today=datetime.date.today()
+    levs = g.db.execute('SELECT crossid,circle,followup FROM FREQ').fetchall()
+    peeps=dict()
+    summ = dict()
 
+    #need to kill the loops if possible
 
-    
-    return render_template('summary.html', levs=levs,peeps=peeps)
+    for l in levs:
+        peeps[l[1]] = g.db.execute('SELECT NAME, ID FROM CARD where CIRCLE=?', (l[0],)).fetchall()
+        summ[l[1]] = dict()
+        #calculate days from last contact
+        for i in peeps[l[1]]:
+            d=g.db.execute('SELECT MAX(DATE) FROM EVENTS where CONTACT=?', (i[1],)).fetchall()[0][0]
+            dt = datetime.datetime.strptime(d,'%Y-%m-%d').date()
+            delta = (today - dt).days
+            followup = l[2] < delta
+            summ[l[1]][i[0]] = (dt,delta)
+        
+    return render_template('summary.html', summ=summ)
 
 @app.route('/card.html')
 def card():
     cname=request.args.get('name','')
-    ##need to search from database using
-    the request and update everything
+    ##need to search from database using the request and update everything
     db=get_db()
     cur=db.execute("SELECT * FROM card WHERE NAME=?", (cname,))
     srch=cur.fetchall()
