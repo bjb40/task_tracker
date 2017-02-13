@@ -15,6 +15,7 @@ app = Flask(__name__)
 
 #db functions revised from https://github.com/pallets/flask/blob/master/examples/flaskr/flaskr/flaskr.py
 
+
 # Load default config and override config from an environment variable
 app.config.update(dict(
     #DATABASE=os.path.join(app.root_path, 'contacts.db'),
@@ -60,8 +61,16 @@ def hello():
 @app.route('/contacts.html')
 def contacts():
     names = g.db.execute("SELECT name FROM card").fetchall()
-    ##should edit this to generate and inpute url automatically (otherwise lots of cut/paste)
     return render_template('contacts.html', names=names)
+
+@app.route('/summary.html')
+def summary():
+    
+    levs = g.db.execute('SELECT circle FROM FREQ').fetchall()
+    peeps = g.db.execute('SELECT * FROM CARD where CIRCLE=5').fetchall()
+    
+    #names = g.db.execute("SELECT name FROM card").fetchall()
+    return render_template('summary.html', levs=levs,peeps=peeps)
 
 @app.route('/card.html')
 def card():
@@ -84,7 +93,10 @@ def make_new():
 @app.route('/update', methods=['POST'])
 def update_entry():
     db = get_db()
-    db.execute('UPDATE card SET NAME=?, EMAIL=?, PHONE=?, NETWORK=?, NOTES=?, JOB=?, INDUSTRY=? WHERE ID=?',
+    #should simplify
+    db.execute('UPDATE card SET NAME=?, EMAIL=?, PHONE=?, NETWORK=?, NOTES=?, JOB=?, INDUSTRY=?, LOCATION=?, ' +
+               'CLOSENESS=?, CIRCLE=?, RESOURCES=?, INFLUENCE=? ' +
+               'WHERE ID=?',
                [request.form['NAME'],
                 request.form['EMAIL'],
                 request.form['PHONE'],
@@ -92,6 +104,11 @@ def update_entry():
                 request.form['NOTES'],
                 request.form['JOB'],
                 request.form['INDUSTRY'],
+                request.form['LOCATION'],
+                request.form['CLOSENESS'],
+                request.form['CIRCLE'],
+                request.form['RESOURCES'],
+                request.form['INFLUENCE'],
                 request.form['ID']])
     db.commit()
     #return render_template('contact_card.html')
@@ -101,6 +118,7 @@ def update_entry():
 @app.route('/add', methods=['POST'])
 def add_entry():
     db = get_db()
+    #need to update....
     db.execute('insert into card (NAME, EMAIL, PHONE, NETWORK, NOTES, JOB, INDUSTRY) values (?, ?, ?, ?, ?, ?, ?)',
                [request.form['NAME'],
                 request.form['EMAIL'],
@@ -114,6 +132,8 @@ def add_entry():
     #return render_template('contact_card.html')
     #flash('New contact created.')
     return redirect(url_for('contacts'))
+
+
 
 ####
 #Event Tracking
