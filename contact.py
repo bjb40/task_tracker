@@ -3,6 +3,8 @@ dev python 2.7
 Wrapper for a contacts database in mysql.
 Collects notes and tracks connections (and ties between contacts)
 
+Based on fundamentals from "How to Be a Power Connector: the 5+50+100 Rule" by Judy Robinett.
+
 Bryce Bartlett
 """
 
