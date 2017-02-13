@@ -67,15 +67,16 @@ def contacts():
 def summary():
     
     levs = g.db.execute('SELECT circle FROM FREQ').fetchall()
-    peeps = g.db.execute('SELECT * FROM CARD where CIRCLE=5').fetchall()
+
+
     
-    #names = g.db.execute("SELECT name FROM card").fetchall()
     return render_template('summary.html', levs=levs,peeps=peeps)
 
 @app.route('/card.html')
 def card():
     cname=request.args.get('name','')
-    ##need to search from database using the request and update everything
+    ##need to search from database using
+    the request and update everything
     db=get_db()
     cur=db.execute("SELECT * FROM card WHERE NAME=?", (cname,))
     srch=cur.fetchall()
