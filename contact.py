@@ -82,7 +82,7 @@ def summary():
             dt = datetime.datetime.strptime(d,'%Y-%m-%d').date()
             delta = (today - dt).days
             followup = l[2] < delta
-            summ[l[1]][i[0]] = (dt,delta)
+            summ[l[1]][i[0]] = [str(dt),delta,str(followup)]
         
     return render_template('summary.html', summ=summ)
 

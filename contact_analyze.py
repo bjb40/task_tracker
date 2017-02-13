@@ -38,6 +38,6 @@ for l in levs:
         dt = datetime.datetime.strptime(d,'%Y-%m-%d').date()
         delta = (today - dt).days
         followup = l[2] < delta
-        summary[l[1]][i[0]] = (dt,delta)
+        summary[l[1]][i[0]] = (str(dt),delta,str(followup))
         
         

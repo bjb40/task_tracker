@@ -11,12 +11,25 @@
 
 
 
-  {% for l in summ recursive %}
+  {% for l, value in summ.items() recursive %}
 <h2>{{l}}</h2>
 <ul>
-  {% if summ[l] %}
+  {% if l %}
 
-  <li> {{loop(summ[l].keys())}}
+  
+    {% if value %}
+
+    {% for i, lst in value.items() recursive %}
+
+  <li> <b>{{i}}</b>
+    <ul>
+      <li> last contact: {{lst[0]}}
+	<li> days since last contact: {{lst[1]}}
+    <li>  needs contact: <em> {{lst[2]}}  </em>
+      </ul>
+    {% endfor %}
+    
+    {% endif %} 
 
   {% endif %}
 </ul>
