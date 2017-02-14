@@ -13,9 +13,18 @@
 
         {% for k in keys %}
    
-        <p>{{k}}
-        <input type="text" name={{k}} value="{{n[k]}}"></input></p>
+      <p>{{k}}
 
+	{% if k != "INCOMING" %}
+        <input type="text" 
+        {% endif %}
+
+	{% if k == "INCOMING" %}
+        <input type="checkbox" 
+        {% endif %}
+	       
+	       name={{k}} value="{{n[k]}}"></input></p>
+      
 	{% endfor %}
 	
       <br><br>

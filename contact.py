@@ -78,12 +78,13 @@ def summary():
         summ[l[1]] = dict()
         #calculate days from last contact
         for i in peeps[l[1]]:
-            d=g.db.execute('SELECT MAX(DATE) FROM EVENTS where CONTACT=?', (i[1],)).fetchall()[0][0]
+            d=g.db.execute('SELECT MAX(DATE) FROM EVENTS where CONTACT=? ORDER BY date', (i[1],)).fetchall()[0][0]
             dt = datetime.datetime.strptime(d,'%Y-%m-%d').date()
             delta = (today - dt).days
             followup = l[2] < delta
             summ[l[1]][i[0]] = [str(dt),delta,str(followup)]
-        
+
+    #need to sort somehow 
     return render_template('summary.html', summ=summ)
 
 @app.route('/card.html')
@@ -133,14 +134,21 @@ def update_entry():
 def add_entry():
     db = get_db()
     #need to update....
-    db.execute('insert into card (NAME, EMAIL, PHONE, NETWORK, NOTES, JOB, INDUSTRY) values (?, ?, ?, ?, ?, ?, ?)',
+    db.execute('insert into card (NAME, EMAIL, PHONE, NETWORK, NOTES, JOB, INDUSTRY, LOCATION,' +
+               'CLOSENESS, CIRCLE, RESOURCES, INFLUENCE)' +
+               'values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                [request.form['NAME'],
                 request.form['EMAIL'],
                 request.form['PHONE'],
                 request.form['NETWORK'],
                 request.form['NOTES'],
                 request.form['JOB'],
-                request.form['INDUSTRY']
+                request.form['INDUSTRY'],
+                request.form['LOCATION'],
+                request.form['CLOSENESS'],
+                request.form['CIRCLE'],
+                request.form['RESOURCES'],
+                request.form['INFLUENCE'],
                ])
     db.commit()
     #return render_template('contact_card.html')
